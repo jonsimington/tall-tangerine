@@ -42,7 +42,9 @@ public:
 private:
    std::unordered_map<std::string, std::string> passed_params_;
 
-   friend void Base_game::set_ai_parameters(const std::string& params) noexcept;
+   //Matt Test
+   //friend void Base_game::set_ai_parameters(const std::string& params) noexcept;
+   friend void Base_game::set_ai_parameters(const std::string& params);
 };
 
 } // cpp_client
