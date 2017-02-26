@@ -79,7 +79,7 @@ namespace cpp_client
       // You can add additional methods here.
       void loadBoard(Piece_Util** b);
       Piece* getPieceAtLoc(std::string file, int rank);
-
+      void printMovesForPiece(Piece_Util** b, int x, int y, bool team);
 
       // ####################
       // Don't edit these!

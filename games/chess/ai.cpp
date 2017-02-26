@@ -66,13 +66,9 @@ namespace cpp_client {
       vector<Move_Util> moves;
       Piece* p = NULL;
       loadBoard(b);
-      printBoard(b);
+      //printBoard(b);
       moves = getPlayerMoves(b, team);
       int randIdx = rand() % moves.size();
-
-      // for (auto m : moves) {
-      //   cout << "Moves: " << m << endl;
-      // }
 
       while (true) {
         if (inCheck(b, moves[randIdx], team)) {
@@ -96,6 +92,10 @@ namespace cpp_client {
           else {
             p->move(moves[randIdx].end.file, moves[randIdx].end.rank);
           }
+          printMovesForPiece(b, moves[randIdx].start.x, moves[randIdx].start.y, team);
+
+          cout << "Chosen Move:\n";
+          cout << moves[randIdx] << endl << endl;
         }
       }
 
@@ -119,6 +119,42 @@ namespace cpp_client {
         team = (p->owner->color.compare("White") == 0);
         loadPiece(b, p->rank, p->file, p->type, team, p->has_moved);
       }
+    }
+
+    void AI::printMovesForPiece(Piece_Util** b, int x, int y, bool team) {
+      Piece_Util** temp = initBoard();
+      vector<Move_Util> tempMoves;
+      temp[x][y] = b[x][y];
+      tempMoves = getPlayerMoves(temp, team);
+
+      cout << endl;
+      switch (b[x][y].type) {
+        case 1:
+        cout << "Available moves for Pawn:\n";
+        break;
+        case 2:
+        cout << "Available moves for Knight:\n";
+        break;
+        case 3:
+        cout << "Available moves for Bishop:\n";
+        break;
+        case 4:
+        cout << "Available moves for Rook:\n";
+        break;
+        case 5:
+        cout << "Available moves for Queen:\n";
+        break;
+        case 6:
+        cout << "Available moves for King:\n";
+        break;
+      }
+
+      for (Move_Util m : tempMoves) {
+        cout << m << endl;
+      }
+
+      cout << endl;
+      clean(temp);
     }
 
     /// <summary>
