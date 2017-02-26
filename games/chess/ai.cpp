@@ -1,7 +1,6 @@
 // AI
 // This is where you build your AI
 #include "ai.hpp"
-#include "ai_util.h"
 
 // You can add #includes here for your AI.
 
@@ -60,9 +59,8 @@ namespace cpp_client {
       std::cout << "Time Remaining: " << player->time_remaining << " ns" << std::endl;
 
       // 4) move piece
-      //Check for King/Queen Side Castling and en passent.
-      //You have to do a move to get out of check if in check.
-      int** b = initBoard();
+      //ToDo: Check en passant.
+      Piece_Util** b = initBoard();
       bool team = (player->color.compare("White") == 0);
 
       vector<Move_Util> moves;
@@ -92,7 +90,12 @@ namespace cpp_client {
 
       for (Piece p : player->pieces) {
         if (p->file.compare(moves[randIdx].start.file) == 0 && p->rank == moves[randIdx].start.rank) {
-          p->move(moves[randIdx].end.file, moves[randIdx].end.rank);
+          if (p->type.compare("Pawn") == 0 && (moves[randIdx].end.rank == 8 || moves[randIdx].end.rank == 1)){
+            p->move(moves[randIdx].end.file, moves[randIdx].end.rank, "Queen");
+          }
+          else {
+            p->move(moves[randIdx].end.file, moves[randIdx].end.rank);
+          }
         }
       }
 
@@ -110,11 +113,11 @@ namespace cpp_client {
       return NULL;
     }
 
-    void AI::loadBoard(int** b) {
+    void AI::loadBoard(Piece_Util** b) {
       bool team = true;
       for (Piece p : game->pieces) {
         team = (p->owner->color.compare("White") == 0);
-        loadPiece(b, p->rank, p->file, p->type, team);
+        loadPiece(b, p->rank, p->file, p->type, team, p->has_moved);
       }
     }
 

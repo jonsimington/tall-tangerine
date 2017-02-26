@@ -12,6 +12,7 @@
 #include "../../joueur/src/attr_wrapper.hpp"
 
 // You can add additional #includes here
+#include "ai_util.h"
 
 namespace cpp_client
 {
@@ -76,7 +77,7 @@ namespace cpp_client
       void print_current_board();
 
       // You can add additional methods here.
-      void loadBoard(int** b);
+      void loadBoard(Piece_Util** b);
       Piece* getPieceAtLoc(std::string file, int rank);
 
 
