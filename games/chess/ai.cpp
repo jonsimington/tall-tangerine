@@ -1,3 +1,4 @@
+
 // AI
 // This is where you build your AI
 #include "ai.hpp"
@@ -59,18 +60,21 @@ namespace cpp_client {
       std::cout << "Time Remaining: " << player->time_remaining << " ns" << std::endl;
 
       // 4) move piece
-      //ToDo: Check en passant.
       Piece_Util** b = initBoard();
       bool team = (player->color.compare("White") == 0);
-
       vector<Move_Util> moves;
       Piece* p = NULL;
       loadBoard(b);
       //printBoard(b);
       moves = getPlayerMoves(b, team);
+
+      if (moves.size() == 0) {
+        return true;
+      }
+
       int randIdx = rand() % moves.size();
 
-      while (true) {
+      while (moves.size() > 0) {
         if (inCheck(b, moves[randIdx], team)) {
           moves.erase(moves.begin() + randIdx);
           if (moves.size() == 0) {
@@ -115,10 +119,30 @@ namespace cpp_client {
 
     void AI::loadBoard(Piece_Util** b) {
       bool team = true;
+      bool hasMoved = false;
       for (Piece p : game->pieces) {
         team = (p->owner->color.compare("White") == 0);
-        loadPiece(b, p->rank, p->file, p->type, team, p->has_moved);
+        hasMoved = p->has_moved;
+        if (p->type.compare("Pawn") == 0) {
+          hasMoved = checkForEnPassent(p);
+        }
+        loadPiece(b, p->rank, p->file, p->type, team, hasMoved);
       }
+    }
+
+    bool AI::checkForEnPassent(Piece p) {
+      if (game->moves.size() > 0) {
+        if ((game->moves.back()->piece->rank == p->rank) && (game->moves.back()->piece->file == p->file)) {
+          if (game->moves.back()->from_rank == 2 && game->moves.back()->to_rank == 4) {
+            return true;
+          }
+          else if (game->moves.back()->from_rank == 7 && game->moves.back()->to_rank == 5) {
+            return true;
+          }
+        }
+      }
+
+      return false;
     }
 
     void AI::printMovesForPiece(Piece_Util** b, int x, int y, bool team) {

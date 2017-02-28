@@ -1,12 +1,19 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @file ai_util.cpp
+/// @author Matt Whitesides CS5400
+/// @brief AI Utilities
+///   Functions and Structures to assist in move generation and AI logic.
+///   0 -- Empty
+///   1 -- Pawn
+///   2 -- Knight
+///   3 -- Bishop
+///   4 -- Rook
+///   5 -- Queen
+///   6 -- King
+///   7 -- Invaliid
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "ai_util.h"
-//0 -- Empty
-//1 -- Pawn
-//2 -- Knight
-//3 -- Bishop
-//4 -- Rook
-//5 -- Queen
-//6 -- King
-//7 -- Invaliid
 
 Piece_Util** initBoard(Piece_Util** copy) {
   Piece_Util** b = new Piece_Util*[12];
@@ -384,7 +391,6 @@ vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team) {
       m.end = idxToPos(x - 1, y + dir);
       moves.push_back(m);
     }
-
   }
   else {
     //Move two spaces from the start
@@ -410,6 +416,20 @@ vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team) {
       m.end = idxToPos(x - 1, y + dir);
       moves.push_back(m);
     }
+  }
+
+  //En Passent
+  if ((b[x + 1][y].type == dir) && (b[x + 1][y].hasMoved)) {
+    Move_Util m;
+    m.start = start;
+    m.end = idxToPos(x + 1, y + dir);
+    moves.push_back(m);
+  }
+  if ((b[x - 1][y].type == dir) && (b[x - 1][y].hasMoved)) {
+    Move_Util m;
+    m.start = start;
+    m.end = idxToPos(x - 1, y + dir);
+    moves.push_back(m);
   }
 
   return moves;

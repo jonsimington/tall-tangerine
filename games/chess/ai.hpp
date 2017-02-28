@@ -80,6 +80,7 @@ namespace cpp_client
       void loadBoard(Piece_Util** b);
       Piece* getPieceAtLoc(std::string file, int rank);
       void printMovesForPiece(Piece_Util** b, int x, int y, bool team);
+      bool checkForEnPassent(Piece p);
 
       // ####################
       // Don't edit these!
