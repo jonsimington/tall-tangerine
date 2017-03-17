@@ -17,25 +17,25 @@
 
 Piece_Util** initBoard(Piece_Util** copy) {
   Piece_Util** b = new Piece_Util*[12];
-  for(int i = 0; i < 12; ++i) {
+  for (int i = 0; i < 12; ++i) {
     b[i] = new Piece_Util[12];
   }
 
-  //Init a blank board or from a template
+  // Init a blank board or from a template
   if (copy == NULL) {
     int temp[12][12] = {
-      {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7},
-      {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7},
-      {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
-      {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
-      {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
-      {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
-      {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
-      {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
-      {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
-      {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
-      {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7},
-      {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7},
+        {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7},
+        {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7},
+        {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
+        {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
+        {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
+        {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
+        {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
+        {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
+        {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
+        {7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7},
+        {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7},
+        {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7},
     };
 
     for (int y = 0; y < 12; ++y) {
@@ -43,8 +43,7 @@ Piece_Util** initBoard(Piece_Util** copy) {
         b[x][y].type = temp[x][y];
       }
     }
-  }
-  else {
+  } else {
     for (int y = 0; y < 12; ++y) {
       for (int x = 0; x < 12; ++x) {
         b[x][y].type = copy[x][y].type;
@@ -57,10 +56,10 @@ Piece_Util** initBoard(Piece_Util** copy) {
 }
 
 void clean(Piece_Util** b) {
-  for(int i = 0; i < 12; ++i) {
-    delete [] b[i];
+  for (int i = 0; i < 12; ++i) {
+    delete[] b[i];
   }
-  delete [] b;
+  delete[] b;
 }
 
 Pos_Util idxToPos(int x, int y) {
@@ -73,63 +72,63 @@ Pos_Util idxToPos(int x, int y) {
 
   switch (rank) {
     case 1:
-    rank = 8;
-    break;
+      rank = 8;
+      break;
     case 2:
-    rank = 7;
-    break;
+      rank = 7;
+      break;
     case 3:
-    rank = 6;
-    break;
+      rank = 6;
+      break;
     case 4:
-    rank = 5;
-    break;
+      rank = 5;
+      break;
     case 5:
-    rank = 4;
-    break;
+      rank = 4;
+      break;
     case 6:
-    rank = 3;
-    break;
+      rank = 3;
+      break;
     case 7:
-    rank = 2;
-    break;
+      rank = 2;
+      break;
     case 8:
-    rank = 1;
-    break;
+      rank = 1;
+      break;
     default:
-    rank = 1;
-    break;
+      rank = 1;
+      break;
   }
 
   --x;
   switch (x) {
     case 1:
-    file = "a";
-    break;
+      file = "a";
+      break;
     case 2:
-    file = "b";
-    break;
+      file = "b";
+      break;
     case 3:
-    file = "c";
-    break;
+      file = "c";
+      break;
     case 4:
-    file = "d";
-    break;
+      file = "d";
+      break;
     case 5:
-    file = "e";
-    break;
+      file = "e";
+      break;
     case 6:
-    file = "f";
-    break;
+      file = "f";
+      break;
     case 7:
-    file = "g";
-    break;
+      file = "g";
+      break;
     case 8:
-    file = "h";
-    break;
+      file = "h";
+      break;
     default:
-    file = "a";
-    break;
+      file = "a";
+      break;
   }
 
   pos.rank = rank;
@@ -138,9 +137,7 @@ Pos_Util idxToPos(int x, int y) {
   return pos;
 }
 
-bool isPos(int x) {
-  return (x >= 0);
-}
+bool isPos(int x) { return (x >= 0); }
 
 bool inCheck(Piece_Util** b, Move_Util m, bool team) {
   bool ret = false;
@@ -187,8 +184,8 @@ Pos_Util getKing(Piece_Util** b, bool team) {
 }
 
 void printBoard(Piece_Util** b) {
-  for (int y = 0; y < 12; ++y){
-    for (int x = 0; x < 12; ++x) {
+  for (int y = 2; y < 10; ++y) {
+    for (int x = 2; x < 10; ++x) {
       if (b[x][y].type >= 0) cout << ' ';
       cout << b[x][y].type << ' ';
     }
@@ -196,81 +193,70 @@ void printBoard(Piece_Util** b) {
   }
 }
 
-void loadPiece(Piece_Util** b, int rank, string file, string type, bool team, bool hasMoved) {
+void loadPiece(Piece_Util** b, int rank, string file, string type, bool team,
+               bool hasMoved) {
   int r = 0;
   int f = 0;
   int t = (team) ? 1 : -1;
 
   switch (rank) {
     case 1:
-    r = 8;
-    break;
+      r = 8;
+      break;
     case 2:
-    r = 7;
-    break;
+      r = 7;
+      break;
     case 3:
-    r = 6;
-    break;
+      r = 6;
+      break;
     case 4:
-    r = 5;
-    break;
+      r = 5;
+      break;
     case 5:
-    r = 4;
-    break;
+      r = 4;
+      break;
     case 6:
-    r = 3;
-    break;
+      r = 3;
+      break;
     case 7:
-    r = 2;
-    break;
+      r = 2;
+      break;
     case 8:
-    r = 1;
-    break;
+      r = 1;
+      break;
   }
 
   ++r;
 
   if (file.compare("a") == 0) {
     f = 2;
-  }
-  else if (file.compare("b") == 0) {
+  } else if (file.compare("b") == 0) {
     f = 3;
-  }
-  else if (file.compare("c") == 0) {
+  } else if (file.compare("c") == 0) {
     f = 4;
-  }
-  else if (file.compare("d") == 0) {
+  } else if (file.compare("d") == 0) {
     f = 5;
-  }
-  else if (file.compare("e") == 0) {
+  } else if (file.compare("e") == 0) {
     f = 6;
-  }
-  else if (file.compare("f") == 0) {
+  } else if (file.compare("f") == 0) {
     f = 7;
-  }
-  else if (file.compare("g") == 0) {
+  } else if (file.compare("g") == 0) {
     f = 8;
-  }
-  else if (file.compare("h") == 0) {
+  } else if (file.compare("h") == 0) {
     f = 9;
   }
 
   if (type.compare("Pawn") == 0) {
     b[f][r].type = (1 * t);
-  }
-  else if (type.compare("Knight") == 0) {
+  } else if (type.compare("Knight") == 0) {
     b[f][r].type = (2 * t);
-  }
-  else if (type.compare("Bishop") == 0) {
+  } else if (type.compare("Bishop") == 0) {
     b[f][r].type = (3 * t);
-  }
-  else if (type.compare("Rook") == 0) {
+  } else if (type.compare("Rook") == 0) {
     b[f][r].type = (4 * t);
-  }
-  else if (type.compare("Queen") == 0) {
+  } else if (type.compare("Queen") == 0) {
     b[f][r].type = (5 * t);
-  }
-  else if (type.compare("King") == 0) {
+  } else if (type.compare("King") == 0) {
     b[f][r].type = (6 * t);
   }
 
@@ -288,23 +274,21 @@ ostream& operator<<(ostream& os, const Move_Util& m) {
 }
 
 vector<Move_Util> getPlayerMoves(Piece_Util** b, bool team) {
-
   vector<Move_Util> moves;
 
   for (int y = 2; y < 10; ++y) {
     for (int x = 2; x < 10; ++x) {
-      //Empty or Invalid Square Check
+      // Empty or Invalid Square Check
       if (b[x][y].type == 0 || b[x][y].type == 7) {
         continue;
       }
 
-      //Other Players Character Check
+      // Other Players Character Check
       if (team) {
         if (b[x][y].type < 0) {
           continue;
         }
-      }
-      else {
+      } else {
         if (b[x][y].type > 0) {
           continue;
         }
@@ -313,31 +297,31 @@ vector<Move_Util> getPlayerMoves(Piece_Util** b, bool team) {
       vector<Move_Util> pieceMoves;
       switch (abs(b[x][y].type)) {
         case 1:
-        pieceMoves = getPawnMoves(b, x, y, team);
-        moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
-        break;
+          pieceMoves = getPawnMoves(b, x, y, team);
+          moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+          break;
         case 2:
-        pieceMoves = getKnightMoves(b, x, y, team);
-        moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
-        break;
+          pieceMoves = getKnightMoves(b, x, y, team);
+          moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+          break;
         case 3:
-        pieceMoves = getBishopMoves(b, x, y, team);
-        moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
-        break;
+          pieceMoves = getBishopMoves(b, x, y, team);
+          moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+          break;
         case 4:
-        pieceMoves = getRookMoves(b, x, y, team);
-        moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
-        break;
+          pieceMoves = getRookMoves(b, x, y, team);
+          moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+          break;
         case 5:
-        pieceMoves = getRookMoves(b, x, y, team);
-        moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
-        pieceMoves = getBishopMoves(b, x, y, team);
-        moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
-        break;
+          pieceMoves = getRookMoves(b, x, y, team);
+          moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+          pieceMoves = getBishopMoves(b, x, y, team);
+          moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+          break;
         case 6:
-        pieceMoves = getKingMoves(b, x, y, team);
-        moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
-        break;
+          pieceMoves = getKingMoves(b, x, y, team);
+          moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+          break;
       }
     }
   }
@@ -359,7 +343,7 @@ vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team) {
     return moves;
   }
 
-  //Move one space
+  // Move one space
   if (b[x][y + dir].type == 0) {
     Move_Util m;
     m.start = start;
@@ -368,7 +352,7 @@ vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team) {
   }
 
   if (team) {
-    //Move two spaces from the start
+    // Move two spaces from the start
     if (y == 8) {
       if ((b[x][y + (dir * 2)].type == 0) && (b[x][y + dir].type == 0)) {
         Move_Util m;
@@ -378,7 +362,7 @@ vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team) {
       }
     }
 
-    //Capture Piece
+    // Capture Piece
     if (b[x + 1][y + dir].type < 0) {
       Move_Util m;
       m.start = start;
@@ -391,9 +375,8 @@ vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team) {
       m.end = idxToPos(x - 1, y + dir);
       moves.push_back(m);
     }
-  }
-  else {
-    //Move two spaces from the start
+  } else {
+    // Move two spaces from the start
     if (y == 3) {
       if ((b[x][y + (dir * 2)].type == 0) && (b[x][y + dir].type == 0)) {
         Move_Util m;
@@ -403,7 +386,7 @@ vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team) {
       }
     }
 
-    //Capture Piece
+    // Capture Piece
     if (b[x + 1][y + dir].type > 0 && b[x + 1][y + dir].type != 7) {
       Move_Util m;
       m.start = start;
@@ -418,7 +401,7 @@ vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //En Passent
+  // En Passent
   if ((b[x + 1][y].type == dir) && (b[x + 1][y].hasMoved)) {
     Move_Util m;
     m.start = start;
@@ -529,8 +512,8 @@ vector<Move_Util> getRookMoves(Piece_Util** b, int x, int y, bool team) {
     return moves;
   }
 
-  //Up
-  while(true) {
+  // Up
+  while (true) {
     ++i;
 
     if (b[x][y - i].type != 0) {
@@ -556,9 +539,9 @@ vector<Move_Util> getRookMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Down
+  // Down
   i = 0;
-  while(true) {
+  while (true) {
     ++i;
 
     if (b[x][y + i].type != 0) {
@@ -584,9 +567,9 @@ vector<Move_Util> getRookMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Left
+  // Left
   i = 0;
-  while(true) {
+  while (true) {
     ++i;
 
     if (b[x - i][y].type != 0) {
@@ -612,9 +595,9 @@ vector<Move_Util> getRookMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Right
+  // Right
   i = 0;
-  while(true) {
+  while (true) {
     ++i;
 
     if (b[x + i][y].type != 0) {
@@ -653,9 +636,9 @@ vector<Move_Util> getBishopMoves(Piece_Util** b, int x, int y, bool team) {
     return moves;
   }
 
-  //Up Left
+  // Up Left
   i = 0;
-  while(true) {
+  while (true) {
     ++i;
 
     if (b[x - i][y - i].type != 0) {
@@ -681,9 +664,9 @@ vector<Move_Util> getBishopMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Up Right
+  // Up Right
   i = 0;
-  while(true) {
+  while (true) {
     ++i;
 
     if (b[x + i][y - i].type != 0) {
@@ -709,9 +692,9 @@ vector<Move_Util> getBishopMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Down Left
+  // Down Left
   i = 0;
-  while(true) {
+  while (true) {
     ++i;
 
     if (b[x - i][y + i].type != 0) {
@@ -737,9 +720,9 @@ vector<Move_Util> getBishopMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Down Right
+  // Down Right
   i = 0;
-  while(true) {
+  while (true) {
     ++i;
 
     if (b[x + i][y + i].type != 0) {
@@ -777,7 +760,7 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
     return moves;
   }
 
-  //Up
+  // Up
   if (b[x][y - 1].type != 7) {
     if ((team != isPos(b[x][y - 1].type)) || (b[x][y - 1].type == 0)) {
       Move_Util m;
@@ -787,7 +770,7 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Down
+  // Down
   if (b[x][y + 1].type != 7) {
     if ((team != isPos(b[x][y + 1].type)) || (b[x][y + 1].type == 0)) {
       Move_Util m;
@@ -797,7 +780,7 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Left
+  // Left
   if (b[x - 1][y].type != 7) {
     if ((team != isPos(b[x - 1][y].type)) || (b[x - 1][y].type == 0)) {
       Move_Util m;
@@ -807,7 +790,7 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Right
+  // Right
   if (b[x + 1][y].type != 7) {
     if ((team != isPos(b[x + 1][y].type)) || (b[x + 1][y].type == 0)) {
       Move_Util m;
@@ -817,7 +800,7 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Up Left
+  // Up Left
   if (b[x - 1][y - 1].type != 7) {
     if ((team != isPos(b[x - 1][y - 1].type)) || (b[x - 1][y - 1].type == 0)) {
       Move_Util m;
@@ -827,7 +810,7 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Up Right
+  // Up Right
   if (b[x + 1][y - 1].type != 7) {
     if ((team != isPos(b[x + 1][y - 1].type)) || (b[x + 1][y - 1].type == 0)) {
       Move_Util m;
@@ -837,7 +820,7 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Down Left
+  // Down Left
   if (b[x - 1][y + 1].type != 7) {
     if ((team != isPos(b[x - 1][y + 1].type)) || (b[x - 1][y + 1].type == 0)) {
       Move_Util m;
@@ -847,7 +830,7 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Down Right
+  // Down Right
   if (b[x + 1][y + 1].type != 7) {
     if ((team != isPos(b[x + 1][y + 1].type)) || (b[x + 1][y + 1].type == 0)) {
       Move_Util m;
@@ -857,12 +840,12 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
     }
   }
 
-  //Castle
+  // Castle
   int i = 0;
   if (!b[x][y].hasMoved) {
-    //Left
+    // Left
     i = 0;
-    while(true) {
+    while (true) {
       ++i;
       if (b[x - i][y].type == 0) {
         continue;
@@ -875,15 +858,14 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
           m.end = idxToPos(x - 2, y);
           moves.push_back(m);
         }
-      }
-      else {
+      } else {
         break;
       }
     }
 
-    //Right
+    // Right
     i = 0;
-    while(true) {
+    while (true) {
       ++i;
       if (b[x + i][y].type == 0) {
         continue;
@@ -896,12 +878,98 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
           m.end = idxToPos(x + 2, y);
           moves.push_back(m);
         }
-      }
-      else {
+      } else {
         break;
       }
     }
   }
 
   return moves;
+}
+
+int heuristic(Piece_Util** b, bool team) {
+  int h = 40;
+
+  for (int y = 0; y < 12; ++y) {
+    for (int x = 0; x < 12; ++x) {
+      if (!team) {
+        switch (b[x][y].type) {
+        case 1:
+          --h;
+          break;
+        case 2:
+        case 3:
+          h -= 3;
+          break;
+        case 4:
+          h -= 5;
+          break;
+        case 5:
+          h -= 9;
+          break;
+        }
+      } else {
+        switch (b[x][y].type) {
+        case -1:
+          --h;
+          break;
+        case -2:
+        case -3:
+          h -= 3;
+          break;
+        case -4:
+          h -= 5;
+          break;
+        case -5:
+          h -= 9;
+          break;
+        }
+      }
+    }
+  }  
+
+  return h;
+}
+
+int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team) {
+  if (d <= 0) {
+    int h = heuristic(b, team);;
+    return h;
+  }
+
+  int val = 0;
+  int bestVal = 0;
+
+  if (isMax) {
+    bestVal = INT_MIN;
+
+    vector<Move_Util> moves = getPlayerMoves(b, team);
+    for (Move_Util m : moves) {
+      Piece_Util** tempBoard = initBoard(b);      
+      applyMove(tempBoard, m);
+
+      val = depthLimitedMiniMax(tempBoard, --d, false, team);
+      bestVal = max(bestVal, val);
+
+      clean(tempBoard);
+      return bestVal;
+    }
+  } else {
+    bestVal = INT_MAX;
+    
+    vector<Move_Util> moves = getPlayerMoves(b, team);
+    for (Move_Util m : moves) {
+      Piece_Util** tempBoard = initBoard(b);      
+      applyMove(tempBoard, m);
+
+      val = depthLimitedMiniMax(tempBoard, --d, true, team);
+      bestVal = min(bestVal, val);
+
+      clean(tempBoard);
+      return bestVal;
+    }
+  }
+
+  cout << "Return 0\n";
+  return 0;
 }
