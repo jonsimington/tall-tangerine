@@ -894,46 +894,47 @@ int heuristic(Piece_Util** b, bool team) {
     for (int x = 0; x < 12; ++x) {
       if (!team) {
         switch (b[x][y].type) {
-        case 1:
-          --h;
-          break;
-        case 2:
-        case 3:
-          h -= 3;
-          break;
-        case 4:
-          h -= 5;
-          break;
-        case 5:
-          h -= 9;
-          break;
+          case 1:
+            --h;
+            break;
+          case 2:
+          case 3:
+            h -= 3;
+            break;
+          case 4:
+            h -= 5;
+            break;
+          case 5:
+            h -= 9;
+            break;
         }
       } else {
         switch (b[x][y].type) {
-        case -1:
-          --h;
-          break;
-        case -2:
-        case -3:
-          h -= 3;
-          break;
-        case -4:
-          h -= 5;
-          break;
-        case -5:
-          h -= 9;
-          break;
+          case -1:
+            --h;
+            break;
+          case -2:
+          case -3:
+            h -= 3;
+            break;
+          case -4:
+            h -= 5;
+            break;
+          case -5:
+            h -= 9;
+            break;
         }
       }
     }
-  }  
+  }
 
   return h;
 }
 
 int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team) {
   if (d <= 0) {
-    int h = heuristic(b, team);;
+    int h = heuristic(b, team);
+    ;
     return h;
   }
 
@@ -945,7 +946,7 @@ int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team) {
 
     vector<Move_Util> moves = getPlayerMoves(b, team);
     for (Move_Util m : moves) {
-      Piece_Util** tempBoard = initBoard(b);      
+      Piece_Util** tempBoard = initBoard(b);
       applyMove(tempBoard, m);
 
       val = depthLimitedMiniMax(tempBoard, --d, false, team);
@@ -956,10 +957,10 @@ int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team) {
     }
   } else {
     bestVal = INT_MAX;
-    
+
     vector<Move_Util> moves = getPlayerMoves(b, team);
     for (Move_Util m : moves) {
-      Piece_Util** tempBoard = initBoard(b);      
+      Piece_Util** tempBoard = initBoard(b);
       applyMove(tempBoard, m);
 
       val = depthLimitedMiniMax(tempBoard, --d, true, team);

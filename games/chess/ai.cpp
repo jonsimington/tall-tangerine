@@ -93,7 +93,7 @@ bool AI::run_turn() {
   }
 
   while ((maxHurCount < moves.size()) && (moves[maxHurCount].h == maxHur)) {
-    ++maxHurCount;        
+    ++maxHurCount;
   }
 
   cout << "Max Count: " << maxHurCount << endl;
@@ -132,7 +132,6 @@ bool AI::run_turn() {
   clean(b);
   return true;  // to signify we are done with our turn.
 }
-
 
 Piece* AI::getPieceAtLoc(std::string file, int rank) {
   for (Piece p : player->pieces) {

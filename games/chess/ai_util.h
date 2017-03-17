@@ -32,7 +32,7 @@ struct Move_Util {
     h = 0;
   }
   friend ostream& operator<<(ostream& os, const Move_Util& m);
-  bool operator<(const Move_Util &rhs) const { return h > rhs.h; }
+  bool operator<(const Move_Util& rhs) const { return h > rhs.h; }
 };
 
 struct Piece_Util {
