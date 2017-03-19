@@ -8,6 +8,12 @@
 namespace cpp_client {
 namespace chess {
 
+// Sets the maximum ammout of time you will allow iterative deepening to occur (Time Limited Iterative Deepening)
+const int MAX_CALC_TIME_IN_SECONDS = 1;
+
+// Set this to something other than 0 if you want to use a set depth instead of time
+const int CONST_ITER_DEPTH = 50;
+
 /// <summary>
 /// This returns your AI's name to the game server.
 /// Replace the string name.
@@ -79,27 +85,64 @@ bool AI::run_turn() {
     return true;
   }
 
-  for (Move_Util m : moves) {
-    m.h = depthLimitedMiniMax(b, 100, true, team);
+  if (CONST_ITER_DEPTH == 0) {
+    time_t start, end;
+    double elapsed;
+    int iterDepth = 0;
+    start = time(NULL);
+
+    while (true) {
+      ++iterDepth;
+      for (Move_Util& m : moves) {
+        Piece_Util** tempBoard = initBoard(b);
+        applyMove(tempBoard, m);
+        m.h = depthLimitedMiniMax(tempBoard, 30, true, team);
+        clean(tempBoard);
+      }
+
+      end = time(NULL);
+      elapsed = difftime(end, start);
+      if ((elapsed > MAX_CALC_TIME_IN_SECONDS) ||
+          (iterDepth >= (INT_MAX - 1))) {
+        break;
+      }
+    }
+
+    cout << "Max Iterative Depth Reached in " << MAX_CALC_TIME_IN_SECONDS
+         << " Seconds: " << iterDepth << endl;
+
+  } else {
+    for (Move_Util& m : moves) {
+      Piece_Util** tempBoard = initBoard(b);
+      applyMove(tempBoard, m);
+      m.h = depthLimitedMiniMax(tempBoard, 99, true, team);
+      clean(tempBoard);
+    }
+
+    cout << "Using Constant Depth of: " << CONST_ITER_DEPTH << endl;
   }
 
+  // Sort moves by huristic value
   sort(moves.begin(), moves.end());
 
-  int maxHur = 0;
-  int maxHurCount = 0;
+  // Get the all moves that match the best huristic
+  int maxHur = moves[0].h;
   int i = 0;
-  if (moves.size() > 0) {
-    maxHurCount = moves[0].h;
+  for (i = 0; (moves[i].h == maxHur) && (i < moves.size()); ++i)
+    ;
+
+  // Randomize moves that have the same top huristic
+  // The else part is to help avoid repeats if few moves are left
+  if (moves.size() > 5) {
+    random_shuffle(moves.begin(), moves.begin() + i);
+  } else {
+    random_shuffle(moves.begin(), moves.end());
   }
 
-  while ((maxHurCount < moves.size()) && (moves[maxHurCount].h == maxHur)) {
-    ++maxHurCount;
-  }
-
-  cout << "Max Count: " << maxHurCount << endl;
-
-  int randNum = rand() % maxHurCount;
-  iter_swap(moves.begin(), moves.begin() + randNum);
+  //Uncomment if you want to see the list of available moves and their huristic values
+  // for (auto m : moves) {
+  //   cout << m << endl;
+  // }
 
   for (Move_Util m : moves) {
     if (!inCheck(b, m, team)) {
@@ -107,10 +150,6 @@ bool AI::run_turn() {
       break;
     }
   }
-
-  // for (int i = 0; i < 3; ++i) {
-  //   cout << "Huristics: " << moves[i].h << endl;
-  // }
 
   for (Piece p : player->pieces) {
     if (p->file.compare(finalMove.start.file) == 0 &&
@@ -121,8 +160,6 @@ bool AI::run_turn() {
       } else {
         p->move(finalMove.end.file, finalMove.end.rank);
       }
-      // printMovesForPiece(b, finalMove.start.x, finalMove.start.y,
-      //                    team);
 
       cout << "Chosen Move:\n";
       cout << finalMove << endl << endl;

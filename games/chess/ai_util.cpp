@@ -162,6 +162,28 @@ bool inCheck(Piece_Util** b, Move_Util m, bool team) {
   return ret;
 }
 
+bool inCheck(Piece_Util** b, bool team) {
+  bool ret = false;
+  Piece_Util** temp = initBoard(b);
+  vector<Move_Util> moves;
+  Pos_Util king;
+
+  moves = getPlayerMoves(temp, !team);
+  king = getKing(temp, team);
+
+  for (Move_Util m : moves) {
+    if (m.end.rank == king.rank) {
+      if (m.end.file.compare(king.file) == 0) {
+        ret = true;
+        break;
+      }
+    }
+  }
+
+  clean(temp);
+  return ret;
+}
+
 void applyMove(Piece_Util** b, Move_Util m) {
   int type = b[m.start.x][m.start.y].type;
   b[m.start.x][m.start.y].type = 0;
@@ -269,7 +291,7 @@ ostream& operator<<(ostream& os, const Pos_Util& p) {
 }
 
 ostream& operator<<(ostream& os, const Move_Util& m) {
-  os << m.start << " -> " << m.end;
+  os << m.start << " -> " << m.end << " | H: " << m.h;
   return os;
 }
 
@@ -888,7 +910,13 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
 }
 
 int heuristic(Piece_Util** b, bool team) {
-  int h = 40;
+  //39 Being all the other teams pieces are gone
+  int h = 39;
+
+  //Reward putting the other team in check
+  if (inCheck(b, !team)) {
+    h += 5;
+  }
 
   for (int y = 0; y < 12; ++y) {
     for (int x = 0; x < 12; ++x) {
@@ -933,9 +961,7 @@ int heuristic(Piece_Util** b, bool team) {
 
 int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team) {
   if (d <= 0) {
-    int h = heuristic(b, team);
-    ;
-    return h;
+    return heuristic(b, team);
   }
 
   int val = 0;
@@ -958,7 +984,7 @@ int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team) {
   } else {
     bestVal = INT_MAX;
 
-    vector<Move_Util> moves = getPlayerMoves(b, team);
+    vector<Move_Util> moves = getPlayerMoves(b, !team);
     for (Move_Util m : moves) {
       Piece_Util** tempBoard = initBoard(b);
       applyMove(tempBoard, m);
@@ -971,6 +997,5 @@ int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team) {
     }
   }
 
-  cout << "Return 0\n";
-  return 0;
+  return -1;
 }

@@ -31,8 +31,8 @@ struct Move_Util {
     inCheck = _inCheck;
     h = 0;
   }
-  friend ostream& operator<<(ostream& os, const Move_Util& m);
-  bool operator<(const Move_Util& rhs) const { return h > rhs.h; }
+  friend ostream& operator << (ostream& os, const Move_Util& m);
+  bool operator < (const Move_Util& rhs) const { return h > rhs.h; }  
 };
 
 struct Piece_Util {
@@ -44,6 +44,7 @@ struct Piece_Util {
 Piece_Util** initBoard(Piece_Util** copy = NULL);
 Pos_Util idxToPos(int x, int y);
 bool isPos(int x);
+bool inCheck(Piece_Util** b, bool team);
 bool inCheck(Piece_Util** b, Move_Util m, bool team);
 void clean(Piece_Util** b);
 void applyMove(Piece_Util** b, Move_Util m);
