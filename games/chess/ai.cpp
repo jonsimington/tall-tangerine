@@ -8,11 +8,13 @@
 namespace cpp_client {
 namespace chess {
 
-// Sets the maximum ammout of time you will allow iterative deepening to occur (Time Limited Iterative Deepening)
-const int MAX_CALC_TIME_IN_SECONDS = 1;
+// Sets the maximum ammout of time you will allow iterative deepening to occur
+// (Time Limited Iterative Deepening)
+const int MAX_CALC_TIME_IN_SECONDS = 0;
 
-// Set this to something other than 0 if you want to use a set depth instead of time
-const int CONST_ITER_DEPTH = 50;
+// Set this to something other than 0 if you want to use a set depth instead of
+// time. (Note you must set this to 0 to use MAX_CALC_TIME_IN_SECONDS)
+const int MAX_ITER_DEPTH = 6;
 
 /// <summary>
 /// This returns your AI's name to the game server.
@@ -85,18 +87,17 @@ bool AI::run_turn() {
     return true;
   }
 
-  if (CONST_ITER_DEPTH == 0) {
+  int iterDepth = 0;
+  if (MAX_ITER_DEPTH == 0) {
     time_t start, end;
     double elapsed;
-    int iterDepth = 0;
     start = time(NULL);
 
     while (true) {
       ++iterDepth;
       for (Move_Util& m : moves) {
-        Piece_Util** tempBoard = initBoard(b);
-        applyMove(tempBoard, m);
-        m.h = depthLimitedMiniMax(tempBoard, 30, true, team);
+        Piece_Util** tempBoard = initBoard(b, m);
+        m.h = depthLimitedMiniMax(tempBoard, iterDepth, true, team);
         clean(tempBoard);
       }
 
@@ -112,14 +113,14 @@ bool AI::run_turn() {
          << " Seconds: " << iterDepth << endl;
 
   } else {
-    for (Move_Util& m : moves) {
-      Piece_Util** tempBoard = initBoard(b);
-      applyMove(tempBoard, m);
-      m.h = depthLimitedMiniMax(tempBoard, 99, true, team);
-      clean(tempBoard);
+    for (iterDepth = 0; iterDepth <= MAX_ITER_DEPTH; ++iterDepth) {
+      for (Move_Util& m : moves) {
+        Piece_Util** tempBoard = initBoard(b, m);
+        m.h = depthLimitedMiniMax(tempBoard, iterDepth, true, team);
+        clean(tempBoard);
+      }
     }
-
-    cout << "Using Constant Depth of: " << CONST_ITER_DEPTH << endl;
+    cout << "Using Iterative Depth of: " << MAX_ITER_DEPTH << endl;
   }
 
   // Sort moves by huristic value
@@ -139,7 +140,8 @@ bool AI::run_turn() {
     random_shuffle(moves.begin(), moves.end());
   }
 
-  //Uncomment if you want to see the list of available moves and their huristic values
+  // Uncomment if you want to see the list of available moves and their huristic
+  // values
   // for (auto m : moves) {
   //   cout << m << endl;
   // }

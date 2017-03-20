@@ -5,11 +5,11 @@
 ///   Functions and Structures to assist in move generation and AI logic.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include <algorithm>
+#include <climits>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <climits>
 using namespace std;
 
 struct Pos_Util {
@@ -33,8 +33,8 @@ struct Move_Util {
     inCheck = _inCheck;
     h = 0;
   }
-  friend ostream& operator << (ostream& os, const Move_Util& m);
-  bool operator < (const Move_Util& rhs) const { return h > rhs.h; }  
+  friend ostream& operator<<(ostream& os, const Move_Util& m);
+  bool operator<(const Move_Util& rhs) const { return h > rhs.h; }
 };
 
 struct Piece_Util {
@@ -44,6 +44,7 @@ struct Piece_Util {
 };
 
 Piece_Util** initBoard(Piece_Util** copy = NULL);
+Piece_Util** initBoard(Piece_Util** copy, Move_Util m);
 Pos_Util idxToPos(int x, int y);
 bool isPos(int x);
 bool inCheck(Piece_Util** b, bool team);
@@ -62,3 +63,5 @@ vector<Move_Util> getBishopMoves(Piece_Util** b, int x, int y, bool team);
 vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team);
 int heuristic(Piece_Util** b, bool team);
 int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team);
+int alphaBetaDLMM(Piece_Util** board, int d, int a, int b,
+                                 bool isMax, bool team);

@@ -55,6 +55,12 @@ Piece_Util** initBoard(Piece_Util** copy) {
   return b;
 }
 
+Piece_Util** initBoard(Piece_Util** copy, Move_Util m) {
+  Piece_Util** b = initBoard(copy);
+  applyMove(b, m);
+  return b;
+}
+
 void clean(Piece_Util** b) {
   for (int i = 0; i < 12; ++i) {
     delete[] b[i];
@@ -910,16 +916,17 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
 }
 
 int heuristic(Piece_Util** b, bool team) {
-  //39 Being all the other teams pieces are gone
+  // 39 Being all the other teams pieces are gone.
+  // When the opponent has all their pieces the h will equal 0;
   int h = 39;
 
-  //Reward putting the other team in check
+  // Reward putting the other team in check
   if (inCheck(b, !team)) {
     h += 5;
   }
 
-  for (int y = 0; y < 12; ++y) {
-    for (int x = 0; x < 12; ++x) {
+  for (int y = 2; y < 10; ++y) {
+    for (int x = 2; x < 10; ++x) {
       if (!team) {
         switch (b[x][y].type) {
           case 1:
@@ -964,37 +971,74 @@ int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team) {
     return heuristic(b, team);
   }
 
-  int val = 0;
-  int bestVal = 0;
+  int v = 0;
 
   if (isMax) {
-    bestVal = INT_MIN;
+    v = INT_MIN;
 
-    vector<Move_Util> moves = getPlayerMoves(b, team);
-    for (Move_Util m : moves) {
-      Piece_Util** tempBoard = initBoard(b);
-      applyMove(tempBoard, m);
-
-      val = depthLimitedMiniMax(tempBoard, --d, false, team);
-      bestVal = max(bestVal, val);
-
+    for (Move_Util m : getPlayerMoves(b, team)) {
+      Piece_Util** tempBoard = initBoard(b, m);
+      v = max(v, depthLimitedMiniMax(tempBoard, --d, false, team));
       clean(tempBoard);
-      return bestVal;
     }
+
+    return v;
   } else {
-    bestVal = INT_MAX;
+    v = INT_MAX;
 
-    vector<Move_Util> moves = getPlayerMoves(b, !team);
-    for (Move_Util m : moves) {
-      Piece_Util** tempBoard = initBoard(b);
-      applyMove(tempBoard, m);
+    for (Move_Util m : getPlayerMoves(b, !team)) {
+      Piece_Util** tempBoard = initBoard(b, m);
+      v = min(v, depthLimitedMiniMax(tempBoard, --d, true, team));
+      clean(tempBoard);
+    }
 
-      val = depthLimitedMiniMax(tempBoard, --d, true, team);
-      bestVal = min(bestVal, val);
+    return v;
+  }
+
+  return -1;
+}
+
+int alphaBetaDLMM(Piece_Util** board, int d, int a, int b, bool isMax, bool team) {
+  if (d <= 0) {
+    return heuristic(board, team);
+  }
+
+  int v = 0;
+
+  if (isMax) {
+    v = INT_MIN;
+
+    for (Move_Util m : getPlayerMoves(board, team)) {
+      Piece_Util** tempBoard = initBoard(board, m);
+
+      v = max(v, alphaBetaDLMM(tempBoard, --d, a, b, false, team));
+      a = max(a, v);
 
       clean(tempBoard);
-      return bestVal;
+
+      if (b <= a) {
+        break;
+      }
     }
+
+    return v;
+  } else {
+    v = INT_MAX;
+
+    for (Move_Util m : getPlayerMoves(board, !team)) {
+      Piece_Util** tempBoard = initBoard(board, m);
+
+      v = min(v, alphaBetaDLMM(tempBoard, --d, a, b, true, team));
+      b = min(b, v);
+
+      clean(tempBoard);
+
+      if (b <= a) {
+        break;
+      }
+    }
+
+    return v;
   }
 
   return -1;
