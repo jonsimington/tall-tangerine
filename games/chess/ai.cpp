@@ -14,7 +14,7 @@ const int MAX_CALC_TIME_IN_SECONDS = 0;
 
 // Set this to something other than 0 if you want to use a set depth instead of
 // time. (Note you must set this to 0 to use MAX_CALC_TIME_IN_SECONDS)
-const int MAX_ITER_DEPTH = 4;
+const int MAX_ITER_DEPTH = 6;
 
 /// <summary>
 /// This returns your AI's name to the game server.
