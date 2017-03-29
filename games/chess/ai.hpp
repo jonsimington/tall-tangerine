@@ -12,7 +12,7 @@
 #include "../../joueur/src/base_ai.hpp"
 
 // You can add additional #includes here
-#include "ai_util.h"
+#include "util.h"
 
 namespace cpp_client {
 
@@ -79,10 +79,13 @@ class AI : public Base_ai {
   void print_current_board();
 
   // You can add additional methods here.
-  void loadBoard(Piece_Util** b);
+  Piece_Util** loadBoard();
   Piece* getPieceAtLoc(std::string file, int rank);
   void printMovesForPiece(Piece_Util** b, int x, int y, bool team);
   bool checkForEnPassent(Piece p);
+  void loadPiece(Piece_Util** b, int rank, string file, string type, bool team,
+                 bool hasMoved);
+  bool movePiece(Move_Util m);
 
   // ####################
   // Don't edit these!

@@ -3,5 +3,8 @@
 # You would add the following line to this folder (without the #)
 # my_code/stuff.cpp
 # If your build fails after adding files, try to build again
-ai_util.h
+util.h
 ai_util.cpp
+move_util.cpp
+pos_util.cpp
+piece_util.cpp

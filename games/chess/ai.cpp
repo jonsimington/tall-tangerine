@@ -9,12 +9,11 @@ namespace cpp_client {
 namespace chess {
 
 // Sets the maximum ammout of time you will allow iterative deepening to occur
-// (Time Limited Iterative Deepening)
-const int MAX_CALC_TIME_IN_SECONDS = 0;
-
-// Set this to something other than 0 if you want to use a set depth instead of
-// time. (Note you must set this to 0 to use MAX_CALC_TIME_IN_SECONDS)
-const int MAX_ITER_DEPTH = 6;
+const int MAX_CALC_TIME_IN_SECONDS = 10;
+// Sets the algorithm to use in the calculations
+// DLLMM (Depth Limited Mini Max)
+// ABDLMM (Alpha Beta Depth Limited Mini Max)
+const Algorithm CHOSEN_ALGORITHM = ABDLMM;
 
 /// <summary>
 /// This returns your AI's name to the game server.
@@ -74,102 +73,57 @@ bool AI::run_turn() {
             << std::endl;
 
   // 4) move piece
-  Piece_Util** b = initBoard();
+  // Get current player, and initialize the game board
   bool team = (player->color.compare("White") == 0);
-  vector<Move_Util> moves;
-  Move_Util finalMove;
-  Piece* p = NULL;
-  loadBoard(b);
-  // printBoard(b);
-  moves = getPlayerMoves(b, team);
-
-  if (moves.size() == 0) {
-    return true;
-  }
+  Piece_Util** b = loadBoard();
+  Move_Util bestMove;
 
   int iterDepth = 0;
-  if (MAX_ITER_DEPTH == 0) {
-    time_t start, end;
-    double elapsed;
-    start = time(NULL);
+  double elapsed = 0.0;
+  time_t start, end;
+  start = time(NULL);
 
-    while (true) {
-      ++iterDepth;
-      for (Move_Util& m : moves) {
-        Piece_Util** tempBoard = initBoard(b, m);
-        m.h = depthLimitedMiniMax(tempBoard, iterDepth, true, team);
-        clean(tempBoard);
-      }
+  // Iterate depth until the selected time has passed
+  while (true) {
+    bestMove = getBestMove(CHOSEN_ALGORITHM, iterDepth, b, team);
+    ++iterDepth;
 
-      end = time(NULL);
-      elapsed = difftime(end, start);
-      if ((elapsed > MAX_CALC_TIME_IN_SECONDS) ||
-          (iterDepth >= (INT_MAX - 1))) {
-        break;
-      }
-    }
-
-    cout << "Max Iterative Depth Reached in " << MAX_CALC_TIME_IN_SECONDS
-         << " Seconds: " << iterDepth << endl;
-
-  } else {
-    for (iterDepth = 0; iterDepth <= MAX_ITER_DEPTH; ++iterDepth) {
-      for (Move_Util& m : moves) {
-        Piece_Util** tempBoard = initBoard(b, m);
-        m.h = depthLimitedMiniMax(tempBoard, iterDepth, true, team);
-        clean(tempBoard);
-      }
-    }
-    cout << "Using Iterative Depth of: " << MAX_ITER_DEPTH << endl;
-  }
-
-  // Sort moves by huristic value
-  sort(moves.begin(), moves.end());
-
-  // Get the all moves that match the best huristic
-  int maxHur = moves[0].h;
-  int i = 0;
-  for (i = 0; (moves[i].h == maxHur) && (i < moves.size()); ++i)
-    ;
-
-  // Randomize moves that have the same top huristic
-  // The else part is to help avoid repeats if few moves are left
-  if (moves.size() > 5) {
-    random_shuffle(moves.begin(), moves.begin() + i);
-  } else {
-    random_shuffle(moves.begin(), moves.end());
-  }
-
-  // Uncomment if you want to see the list of available moves and their huristic
-  // values
-  // for (auto m : moves) {
-  //   cout << m << endl;
-  // }
-
-  for (Move_Util m : moves) {
-    if (!inCheck(b, m, team)) {
-      finalMove = m;
+    end = time(NULL);
+    elapsed = difftime(end, start);
+    if ((elapsed > MAX_CALC_TIME_IN_SECONDS) || (iterDepth >= 128)) {
       break;
     }
   }
 
-  for (Piece p : player->pieces) {
-    if (p->file.compare(finalMove.start.file) == 0 &&
-        p->rank == finalMove.start.rank) {
-      if (p->type.compare("Pawn") == 0 &&
-          (finalMove.end.rank == 8 || finalMove.end.rank == 1)) {
-        p->move(finalMove.end.file, finalMove.end.rank, "Queen");
-      } else {
-        p->move(finalMove.end.file, finalMove.end.rank);
-      }
+  cout << "Max Iterative Depth Reached in " << MAX_CALC_TIME_IN_SECONDS
+       << " Seconds Using " << CHOSEN_ALGORITHM << ": " << iterDepth << endl;
 
-      cout << "Chosen Move:\n";
-      cout << finalMove << endl << endl;
-    }
+  // If a valid best move was found translate it into the games moveset
+  if (bestMove.h != -1) {
+    movePiece(bestMove);
   }
 
   clean(b);
   return true;  // to signify we are done with our turn.
+}
+
+bool AI::movePiece(Move_Util m) {
+  for (Piece p : player->pieces) {
+    if (p->file.compare(m.start.file) == 0 && p->rank == m.start.rank) {
+      if (p->type.compare("Pawn") == 0 &&
+          (m.end.rank == 8 || m.end.rank == 1)) {
+        p->move(m.end.file, m.end.rank, "Queen");
+      } else {
+        p->move(m.end.file, m.end.rank);
+      }
+
+      cout << "Chosen Move:\n";
+      cout << m << endl << endl;
+      return true;
+    }
+  }
+
+  return false;
 }
 
 Piece* AI::getPieceAtLoc(std::string file, int rank) {
@@ -182,7 +136,8 @@ Piece* AI::getPieceAtLoc(std::string file, int rank) {
   return NULL;
 }
 
-void AI::loadBoard(Piece_Util** b) {
+Piece_Util** AI::loadBoard() {
+  Piece_Util** b = initBoard();
   bool team = true;
   bool hasMoved = false;
   for (Piece p : game->pieces) {
@@ -193,6 +148,7 @@ void AI::loadBoard(Piece_Util** b) {
     }
     loadPiece(b, p->rank, p->file, p->type, team, hasMoved);
   }
+  return b;
 }
 
 bool AI::checkForEnPassent(Piece p) {
@@ -246,6 +202,76 @@ void AI::printMovesForPiece(Piece_Util** b, int x, int y, bool team) {
 
   cout << endl;
   clean(temp);
+}
+
+void AI::loadPiece(Piece_Util** b, int rank, string file, string type,
+                   bool team, bool hasMoved) {
+  int r = 0;
+  int f = 0;
+  int t = (team) ? 1 : -1;
+
+  switch (rank) {
+    case 1:
+      r = 8;
+      break;
+    case 2:
+      r = 7;
+      break;
+    case 3:
+      r = 6;
+      break;
+    case 4:
+      r = 5;
+      break;
+    case 5:
+      r = 4;
+      break;
+    case 6:
+      r = 3;
+      break;
+    case 7:
+      r = 2;
+      break;
+    case 8:
+      r = 1;
+      break;
+  }
+
+  ++r;
+
+  if (file.compare("a") == 0) {
+    f = 2;
+  } else if (file.compare("b") == 0) {
+    f = 3;
+  } else if (file.compare("c") == 0) {
+    f = 4;
+  } else if (file.compare("d") == 0) {
+    f = 5;
+  } else if (file.compare("e") == 0) {
+    f = 6;
+  } else if (file.compare("f") == 0) {
+    f = 7;
+  } else if (file.compare("g") == 0) {
+    f = 8;
+  } else if (file.compare("h") == 0) {
+    f = 9;
+  }
+
+  if (type.compare("Pawn") == 0) {
+    b[f][r].type = (1 * t);
+  } else if (type.compare("Knight") == 0) {
+    b[f][r].type = (2 * t);
+  } else if (type.compare("Bishop") == 0) {
+    b[f][r].type = (3 * t);
+  } else if (type.compare("Rook") == 0) {
+    b[f][r].type = (4 * t);
+  } else if (type.compare("Queen") == 0) {
+    b[f][r].type = (5 * t);
+  } else if (type.compare("King") == 0) {
+    b[f][r].type = (6 * t);
+  }
+
+  b[f][r].hasMoved = hasMoved;
 }
 
 /// <summary>
@@ -311,8 +337,6 @@ void AI::print_current_board() {
     std::cout << str << std::endl;
   }
 }
-
-// You can add additional methods here for your AI to call
 
 }  // chess
 
