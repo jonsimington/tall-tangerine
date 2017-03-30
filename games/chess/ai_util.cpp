@@ -187,9 +187,10 @@ Move_Util getBestMove(Algorithm a, int d, Piece_Util** b, bool team) {
   sort(moves.begin(), moves.end());
 
   // Get the all moves that match the best huristic
+  int moveCount = (unsigned int)moves.size();
   int maxHur = moves[0].h;
   int i = 0;
-  for (i = 0; (moves[i].h == maxHur) && (i < moves.size()); ++i)
+  for (i = 0; (moves[i].h == maxHur) && (i < moveCount); ++i)
     ;
 
   // Randomize moves that have the same top huristic
@@ -197,7 +198,7 @@ Move_Util getBestMove(Algorithm a, int d, Piece_Util** b, bool team) {
 
   // Only pick a move not leaving you in check
   i = 0;
-  while ((i < moves.size()) && (inCheck(b, moves[i], team))) {
+  while ((i < moveCount) && (inCheck(b, moves[i], team))) {
     ++i;
   }
 

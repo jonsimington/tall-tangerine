@@ -29,6 +29,12 @@ struct Move_Util {
   bool inCheck;
   int h;
   Move_Util() : inCheck(false), h(-1) {}
+  Move_Util(Pos_Util _start, Pos_Util _end) {
+    start = _start;
+    end = _end;
+    inCheck = false;
+    h = -1;
+  }
   friend ostream& operator<<(ostream& os, const Move_Util& m);
   bool operator<(const Move_Util& rhs) const { return h > rhs.h; }
   void applyMove(Piece_Util** b);
@@ -45,13 +51,15 @@ int heuristic(Piece_Util** b, bool team);
 int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team);
 int alphaBetaDLMM(Piece_Util** board, int d, int a, int b, bool isMax,
                   bool team);
-                  
+
 vector<Move_Util> getPlayerMoves(Piece_Util** b, bool team);
 vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team);
 vector<Move_Util> getKnightMoves(Piece_Util** b, int x, int y, bool team);
 vector<Move_Util> getRookMoves(Piece_Util** b, int x, int y, bool team);
 vector<Move_Util> getBishopMoves(Piece_Util** b, int x, int y, bool team);
 vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team);
+bool checkAndPushMove(Piece_Util** b, vector<Move_Util>* moves, int x, int y,
+               bool team, Pos_Util start);
 bool isPos(int x);
 
 bool inCheck(Piece_Util** b, bool team, bool useBoard = false);

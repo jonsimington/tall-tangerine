@@ -60,82 +60,41 @@ vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team) {
   int dir = (team) ? -1 : 1;
   vector<Move_Util> moves;
   Pos_Util start = idxToPos(x, y);
-  Pos_Util end;
-
-  if (abs(b[x][y].type) != 1) {
-    return moves;
-  }
 
   // Move one space
   if (b[x][y + dir].type == 0) {
-    Move_Util m;
-    m.start = start;
-    m.end = idxToPos(x, y + dir);
-    moves.push_back(m);
+    checkAndPushMove(b, &moves, x, (y + dir), team, start);
   }
 
+  // Move two spaces from the start
   if (team) {
-    // Move two spaces from the start
     if (y == 8) {
-      if ((b[x][y + (dir * 2)].type == 0) && (b[x][y + dir].type == 0)) {
-        Move_Util m;
-        m.start = start;
-        m.end = idxToPos(x, y + (dir * 2));
-        moves.push_back(m);
+      if (b[x][y + dir].type == 0 && b[x][y + (dir * 2)].type == 0) {
+        checkAndPushMove(b, &moves, x, (y + (dir * 2)), team, start);
       }
-    }
-
-    // Capture Piece
-    if (b[x + 1][y + dir].type < 0) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + 1, y + dir);
-      moves.push_back(m);
-    }
-    if (b[x - 1][y + dir].type < 0) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - 1, y + dir);
-      moves.push_back(m);
     }
   } else {
-    // Move two spaces from the start
     if (y == 3) {
-      if ((b[x][y + (dir * 2)].type == 0) && (b[x][y + dir].type == 0)) {
-        Move_Util m;
-        m.start = start;
-        m.end = idxToPos(x, y + (dir * 2));
-        moves.push_back(m);
+      if (b[x][y + dir].type == 0 && b[x][y + (dir * 2)].type == 0) {
+        checkAndPushMove(b, &moves, x, (y + (dir * 2)), team, start);
       }
     }
+  }
 
-    // Capture Piece
-    if (b[x + 1][y + dir].type > 0 && b[x + 1][y + dir].type != 7) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + 1, y + dir);
-      moves.push_back(m);
-    }
-    if (b[x - 1][y + dir].type > 0 && b[x - 1][y + dir].type != 7) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - 1, y + dir);
-      moves.push_back(m);
-    }
+  // Capture Piece
+  if (b[x + 1][y + dir].type != 0) {
+    checkAndPushMove(b, &moves, (x + 1), (y + dir), team, start);
+  }
+  if (b[x - 1][y + dir].type != 0) {
+    checkAndPushMove(b, &moves, (x - 1), (y + dir), team, start);
   }
 
   // En Passent
   if ((b[x + 1][y].type == dir) && (b[x + 1][y].hasMoved)) {
-    Move_Util m;
-    m.start = start;
-    m.end = idxToPos(x + 1, y + dir);
-    moves.push_back(m);
+    moves.push_back(Move_Util(start, idxToPos((x + 1), (y + dir))));
   }
   if ((b[x - 1][y].type == dir) && (b[x - 1][y].hasMoved)) {
-    Move_Util m;
-    m.start = start;
-    m.end = idxToPos(x - 1, y + dir);
-    moves.push_back(m);
+    moves.push_back(Move_Util(start, idxToPos((x - 1), (y + dir))));
   }
 
   return moves;
@@ -144,83 +103,19 @@ vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team) {
 vector<Move_Util> getKnightMoves(Piece_Util** b, int x, int y, bool team) {
   vector<Move_Util> moves;
   Pos_Util start = idxToPos(x, y);
-  Pos_Util end;
 
   if (abs(b[x][y].type) != 2) {
     return moves;
   }
 
-  if (b[x - 2][y + 1].type != 7) {
-    if (b[x - 2][y + 1].type == 0 || (team != isPos(b[x - 2][y + 1].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - 2, y + 1);
-      moves.push_back(m);
-    }
-  }
-
-  if (b[x - 1][y + 2].type != 7) {
-    if (b[x - 1][y + 2].type == 0 || (team != isPos(b[x - 1][y + 2].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - 1, y + 2);
-      moves.push_back(m);
-    }
-  }
-
-  if (b[x + 2][y + 1].type != 7) {
-    if (b[x + 2][y + 1].type == 0 || (team != isPos(b[x + 2][y + 1].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + 2, y + 1);
-      moves.push_back(m);
-    }
-  }
-
-  if (b[x + 1][y + 2].type != 7) {
-    if (b[x + 1][y + 2].type == 0 || (team != isPos(b[x + 1][y + 2].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + 1, y + 2);
-      moves.push_back(m);
-    }
-  }
-
-  if (b[x + 2][y - 1].type != 7) {
-    if (b[x + 2][y - 1].type == 0 || (team != isPos(b[x + 2][y - 1].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + 2, y - 1);
-      moves.push_back(m);
-    }
-  }
-
-  if (b[x + 1][y - 2].type != 7) {
-    if (b[x + 1][y - 2].type == 0 || (team != isPos(b[x + 1][y - 2].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + 1, y - 2);
-      moves.push_back(m);
-    }
-  }
-
-  if (b[x - 2][y - 1].type != 7) {
-    if (b[x - 2][y - 1].type == 0 || (team != isPos(b[x - 2][y - 1].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - 2, y - 1);
-      moves.push_back(m);
-    }
-  }
-
-  if (b[x - 1][y - 2].type != 7) {
-    if (b[x - 1][y - 2].type == 0 || (team != isPos(b[x - 1][y - 2].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - 1, y - 2);
-      moves.push_back(m);
-    }
-  }
+  checkAndPushMove(b, &moves, (x - 2), (y + 1), team, start);
+  checkAndPushMove(b, &moves, (x - 1), (y + 2), team, start);
+  checkAndPushMove(b, &moves, (x + 2), (y + 1), team, start);
+  checkAndPushMove(b, &moves, (x + 1), (y + 2), team, start);
+  checkAndPushMove(b, &moves, (x + 2), (y - 1), team, start);
+  checkAndPushMove(b, &moves, (x + 1), (y - 2), team, start);
+  checkAndPushMove(b, &moves, (x - 2), (y - 1), team, start);
+  checkAndPushMove(b, &moves, (x - 1), (y - 2), team, start);
 
   return moves;
 }
@@ -228,36 +123,12 @@ vector<Move_Util> getKnightMoves(Piece_Util** b, int x, int y, bool team) {
 vector<Move_Util> getRookMoves(Piece_Util** b, int x, int y, bool team) {
   vector<Move_Util> moves;
   Pos_Util start = idxToPos(x, y);
-  Pos_Util end;
   int i = 0;
-
-  if (abs(b[x][y].type) != 4 && abs(b[x][y].type) != 5) {
-    return moves;
-  }
 
   // Up
   while (true) {
     ++i;
-
-    if (b[x][y - i].type != 0) {
-      if (b[x][y - i].type == 7 || (team == isPos(b[x][y - i].type))) {
-        break;
-      }
-    }
-
-    if (b[x][y - i].type == 0) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x, y - i);
-      moves.push_back(m);
-      continue;
-    }
-
-    if ((team != isPos(b[x][y - i].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x, y - i);
-      moves.push_back(m);
+    if (!checkAndPushMove(b, &moves, x, (y - i), team, start)) {
       break;
     }
   }
@@ -266,26 +137,7 @@ vector<Move_Util> getRookMoves(Piece_Util** b, int x, int y, bool team) {
   i = 0;
   while (true) {
     ++i;
-
-    if (b[x][y + i].type != 0) {
-      if (b[x][y + i].type == 7 || (team == isPos(b[x][y + i].type))) {
-        break;
-      }
-    }
-
-    if (b[x][y + i].type == 0) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x, y + i);
-      moves.push_back(m);
-      continue;
-    }
-
-    if ((team != isPos(b[x][y + i].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x, y + i);
-      moves.push_back(m);
+    if (!checkAndPushMove(b, &moves, x, (y + i), team, start)) {
       break;
     }
   }
@@ -294,26 +146,7 @@ vector<Move_Util> getRookMoves(Piece_Util** b, int x, int y, bool team) {
   i = 0;
   while (true) {
     ++i;
-
-    if (b[x - i][y].type != 0) {
-      if (b[x - i][y].type == 7 || (team == isPos(b[x - i][y].type))) {
-        break;
-      }
-    }
-
-    if (b[x - i][y].type == 0) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - i, y);
-      moves.push_back(m);
-      continue;
-    }
-
-    if ((team != isPos(b[x - i][y].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - i, y);
-      moves.push_back(m);
+    if (!checkAndPushMove(b, &moves, (x - i), y, team, start)) {
       break;
     }
   }
@@ -322,26 +155,7 @@ vector<Move_Util> getRookMoves(Piece_Util** b, int x, int y, bool team) {
   i = 0;
   while (true) {
     ++i;
-
-    if (b[x + i][y].type != 0) {
-      if (b[x + i][y].type == 7 || (team == isPos(b[x + i][y].type))) {
-        break;
-      }
-    }
-
-    if (b[x + i][y].type == 0) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + i, y);
-      moves.push_back(m);
-      continue;
-    }
-
-    if ((team != isPos(b[x + i][y].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + i, y);
-      moves.push_back(m);
+    if (!checkAndPushMove(b, &moves, (x + i), y, team, start)) {
       break;
     }
   }
@@ -352,37 +166,13 @@ vector<Move_Util> getRookMoves(Piece_Util** b, int x, int y, bool team) {
 vector<Move_Util> getBishopMoves(Piece_Util** b, int x, int y, bool team) {
   vector<Move_Util> moves;
   Pos_Util start = idxToPos(x, y);
-  Pos_Util end;
   int i = 0;
-
-  if (abs(b[x][y].type) != 3 && abs(b[x][y].type) != 5) {
-    return moves;
-  }
 
   // Up Left
   i = 0;
   while (true) {
     ++i;
-
-    if (b[x - i][y - i].type != 0) {
-      if (b[x - i][y - i].type == 7 || (team == isPos(b[x - i][y - i].type))) {
-        break;
-      }
-    }
-
-    if (b[x - i][y - i].type == 0) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - i, y - i);
-      moves.push_back(m);
-      continue;
-    }
-
-    if ((team != isPos(b[x - i][y - i].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - i, y - i);
-      moves.push_back(m);
+    if (!checkAndPushMove(b, &moves, (x - i), (y - i), team, start)) {
       break;
     }
   }
@@ -391,26 +181,7 @@ vector<Move_Util> getBishopMoves(Piece_Util** b, int x, int y, bool team) {
   i = 0;
   while (true) {
     ++i;
-
-    if (b[x + i][y - i].type != 0) {
-      if (b[x + i][y - i].type == 7 || (team == isPos(b[x + i][y - i].type))) {
-        break;
-      }
-    }
-
-    if (b[x + i][y - i].type == 0) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + i, y - i);
-      moves.push_back(m);
-      continue;
-    }
-
-    if ((team != isPos(b[x + i][y - i].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + i, y - i);
-      moves.push_back(m);
+    if (!checkAndPushMove(b, &moves, (x + i), (y - i), team, start)) {
       break;
     }
   }
@@ -419,26 +190,7 @@ vector<Move_Util> getBishopMoves(Piece_Util** b, int x, int y, bool team) {
   i = 0;
   while (true) {
     ++i;
-
-    if (b[x - i][y + i].type != 0) {
-      if (b[x - i][y + i].type == 7 || (team == isPos(b[x - i][y + i].type))) {
-        break;
-      }
-    }
-
-    if (b[x - i][y + i].type == 0) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - i, y + i);
-      moves.push_back(m);
-      continue;
-    }
-
-    if ((team != isPos(b[x - i][y + i].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - i, y + i);
-      moves.push_back(m);
+    if (!checkAndPushMove(b, &moves, (x - i), (y + i), team, start)) {
       break;
     }
   }
@@ -447,26 +199,7 @@ vector<Move_Util> getBishopMoves(Piece_Util** b, int x, int y, bool team) {
   i = 0;
   while (true) {
     ++i;
-
-    if (b[x + i][y + i].type != 0) {
-      if (b[x + i][y + i].type == 7 || (team == isPos(b[x + i][y + i].type))) {
-        break;
-      }
-    }
-
-    if (b[x + i][y + i].type == 0) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + i, y + i);
-      moves.push_back(m);
-      continue;
-    }
-
-    if ((team != isPos(b[x + i][y + i].type))) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + i, y + i);
-      moves.push_back(m);
+    if (!checkAndPushMove(b, &moves, (x + i), (y + i), team, start)) {
       break;
     }
   }
@@ -477,91 +210,34 @@ vector<Move_Util> getBishopMoves(Piece_Util** b, int x, int y, bool team) {
 vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
   vector<Move_Util> moves;
   Pos_Util start = idxToPos(x, y);
-  Pos_Util end;
 
   if (abs(b[x][y].type) != 6) {
     return moves;
   }
 
   // Up
-  if (b[x][y - 1].type != 7) {
-    if ((team != isPos(b[x][y - 1].type)) || (b[x][y - 1].type == 0)) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x, y - 1);
-      moves.push_back(m);
-    }
-  }
+  checkAndPushMove(b, &moves, x, (y - 1), team, start);
 
   // Down
-  if (b[x][y + 1].type != 7) {
-    if ((team != isPos(b[x][y + 1].type)) || (b[x][y + 1].type == 0)) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x, y + 1);
-      moves.push_back(m);
-    }
-  }
+  checkAndPushMove(b, &moves, x, (y + 1), team, start);
 
   // Left
-  if (b[x - 1][y].type != 7) {
-    if ((team != isPos(b[x - 1][y].type)) || (b[x - 1][y].type == 0)) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - 1, y);
-      moves.push_back(m);
-    }
-  }
+  checkAndPushMove(b, &moves, (x - 1), y, team, start);
 
   // Right
-  if (b[x + 1][y].type != 7) {
-    if ((team != isPos(b[x + 1][y].type)) || (b[x + 1][y].type == 0)) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + 1, y);
-      moves.push_back(m);
-    }
-  }
+  checkAndPushMove(b, &moves, (x + 1), y, team, start);
 
   // Up Left
-  if (b[x - 1][y - 1].type != 7) {
-    if ((team != isPos(b[x - 1][y - 1].type)) || (b[x - 1][y - 1].type == 0)) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - 1, y - 1);
-      moves.push_back(m);
-    }
-  }
+  checkAndPushMove(b, &moves, (x - 1), (y - 1), team, start);
 
   // Up Right
-  if (b[x + 1][y - 1].type != 7) {
-    if ((team != isPos(b[x + 1][y - 1].type)) || (b[x + 1][y - 1].type == 0)) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + 1, y - 1);
-      moves.push_back(m);
-    }
-  }
+  checkAndPushMove(b, &moves, (x + 1), (y - 1), team, start);
 
   // Down Left
-  if (b[x - 1][y + 1].type != 7) {
-    if ((team != isPos(b[x - 1][y + 1].type)) || (b[x - 1][y + 1].type == 0)) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x - 1, y + 1);
-      moves.push_back(m);
-    }
-  }
+  checkAndPushMove(b, &moves, (x - 1), (y + 1), team, start);
 
   // Down Right
-  if (b[x + 1][y + 1].type != 7) {
-    if ((team != isPos(b[x + 1][y + 1].type)) || (b[x + 1][y + 1].type == 0)) {
-      Move_Util m;
-      m.start = start;
-      m.end = idxToPos(x + 1, y + 1);
-      moves.push_back(m);
-    }
-  }
+  checkAndPushMove(b, &moves, (x + 1), (y + 1), team, start);
 
   // Castle
   int i = 0;
@@ -574,9 +250,7 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
         continue;
       }
       if ((abs(b[x - i][y].type) == 4) && (!b[x - i][y].hasMoved)) {
-        Move_Util m;
-        m.start = start;
-        m.end = idxToPos(x - 1, y);
+        Move_Util m = Move_Util(start, idxToPos(x - 1, y));
         if (!inCheck(b, m, team)) {
           m.end = idxToPos(x - 2, y);
           moves.push_back(m);
@@ -594,9 +268,7 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
         continue;
       }
       if ((abs(b[x + i][y].type) == 4) && (!b[x + i][y].hasMoved)) {
-        Move_Util m;
-        m.start = start;
-        m.end = idxToPos(x + 1, y);
+        Move_Util m = Move_Util(start, idxToPos(x + 1, y));
         if (!inCheck(b, m, team)) {
           m.end = idxToPos(x + 2, y);
           moves.push_back(m);
@@ -608,6 +280,22 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
   }
 
   return moves;
+}
+
+bool checkAndPushMove(Piece_Util** b, vector<Move_Util>* moves, int x, int y,
+                      bool team, Pos_Util start) {
+  if (b[x][y].type != 7) {
+    if ((team != isPos(b[x][y].type)) || (b[x][y].type == 0)) {
+      moves->push_back(Move_Util(start, idxToPos(x, y)));
+
+      if (b[x][y].type != 0) {
+        return false;
+      }
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void Move_Util::applyMove(Piece_Util** b) {
