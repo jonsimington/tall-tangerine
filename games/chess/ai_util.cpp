@@ -2,7 +2,7 @@
 /// @file ai_util.cpp
 /// @author Matt Whitesides CS5400
 /// @brief AI Utilities
-///   Functions and Structures to assist in move generation and AI logic.
+///   Functions and Structures to assist in AI logic.
 ///   0 -- Empty
 ///   1 -- Pawn
 ///   2 -- Knight
@@ -38,6 +38,9 @@ int heuristic(Piece_Util** b, bool team) {
   // Reward putting the other team in check
   if (inCheck(b, !team)) {
     h += 5;
+    if (inCheckMate(b, !team)) {
+      return INT_MAX;
+    }
   }
 
   for (int y = 2; y < 10; ++y) {

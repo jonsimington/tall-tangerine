@@ -64,6 +64,7 @@ bool isPos(int x);
 
 bool inCheck(Piece_Util** b, bool team, bool useBoard = false);
 bool inCheck(Piece_Util** b, Move_Util m, bool team);
+bool inCheckMate(Piece_Util** b, bool team);
 void printBoard(Piece_Util** b);
 
 Piece_Util** initBoard(Piece_Util** copy = NULL);

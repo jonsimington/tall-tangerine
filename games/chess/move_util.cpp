@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @file move_util.cpp
+/// @author Matt Whitesides CS5400
+/// @brief Move Utilities
+///   Functions and Structures to assist in move generation.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "util.h"
 
 ostream& operator<<(ostream& os, const Move_Util& m) {
@@ -287,7 +294,6 @@ bool checkAndPushMove(Piece_Util** b, vector<Move_Util>* moves, int x, int y,
   if (b[x][y].type != 7) {
     if ((team != isPos(b[x][y].type)) || (b[x][y].type == 0)) {
       moves->push_back(Move_Util(start, idxToPos(x, y)));
-
       if (b[x][y].type != 0) {
         return false;
       }

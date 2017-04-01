@@ -9,7 +9,7 @@ namespace cpp_client {
 namespace chess {
 
 // Sets the maximum ammout of time you will allow iterative deepening to occur
-const int MAX_CALC_TIME_IN_SECONDS = 10;
+const int MAX_CALC_TIME_IN_SECONDS = 5;
 // Sets the algorithm to use in the calculations
 // DLLMM (Depth Limited Mini Max)
 // ABDLMM (Alpha Beta Depth Limited Mini Max)
@@ -83,7 +83,7 @@ bool AI::run_turn() {
   time_t start, end;
   start = time(NULL);
 
-  // Iterate depth until the selected time has passed
+  //Iterate depth until the selected time has passed
   while (true) {
     bestMove = getBestMove(CHOSEN_ALGORITHM, iterDepth, b, team);
     ++iterDepth;

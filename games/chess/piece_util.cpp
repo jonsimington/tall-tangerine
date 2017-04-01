@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @file piece_util.cpp
+/// @author Matt Whitesides CS5400
+/// @brief Piece Utilities
+///   Functions and Structures to assist in board state generation.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "util.h"
 
 Piece_Util** initBoard(Piece_Util** copy) {
@@ -66,8 +73,7 @@ bool inCheck(Piece_Util** b, bool team, bool useBoard) {
 
   if (useBoard) {
     temp = b;
-  }
-  else {
+  } else {
     temp = initBoard(b);
   }
 
@@ -80,6 +86,22 @@ bool inCheck(Piece_Util** b, bool team, bool useBoard) {
         ret = true;
         break;
       }
+    }
+  }
+
+  clean(temp);
+  return ret;
+}
+
+bool inCheckMate(Piece_Util** b, bool team) {
+  bool ret = true;
+  Piece_Util** temp = initBoard(b);
+  vector<Move_Util> moves = getPlayerMoves(temp, team);
+
+  for (Move_Util m : moves) {
+    if (!inCheck(temp, m, team)) {
+      ret = false;
+      break;
     }
   }
 
