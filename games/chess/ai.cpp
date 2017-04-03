@@ -83,14 +83,16 @@ bool AI::run_turn() {
   time_t start, end;
   start = time(NULL);
 
-  //Iterate depth until the selected time has passed
+  // Iterate depth until the selected time has passed
+  // Note: Constant MAX_CALC_TIME_IN_SECONDS is defined on line: 12
+  // Note: Constant CHOSEN_ALGORITHM is defined on line: 16
   while (true) {
-    bestMove = getBestMove(CHOSEN_ALGORITHM, iterDepth, b, team);
     ++iterDepth;
+    bestMove = getBestMove(CHOSEN_ALGORITHM, iterDepth, b, team);
 
     end = time(NULL);
     elapsed = difftime(end, start);
-    if ((elapsed > MAX_CALC_TIME_IN_SECONDS) || (iterDepth >= 128)) {
+    if ((elapsed > MAX_CALC_TIME_IN_SECONDS) || (iterDepth >= 64)) {
       break;
     }
   }
@@ -99,9 +101,7 @@ bool AI::run_turn() {
        << " Seconds Using " << CHOSEN_ALGORITHM << ": " << iterDepth << endl;
 
   // If a valid best move was found translate it into the games moveset
-  if (bestMove.h != -1) {
-    movePiece(bestMove);
-  }
+  movePiece(bestMove);
 
   clean(b);
   return true;  // to signify we are done with our turn.

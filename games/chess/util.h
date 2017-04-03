@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @file util.h
+/// @author Matt Whitesides CS5400
+/// @brief Utilities Header
+///   Contains the header definitions for the added ai releated utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #ifndef UTIL_H
 #define UTIL_H
 
@@ -42,15 +49,19 @@ struct Move_Util {
 
 enum Algorithm {
   DLMM,   // Depth Limited MiniMax
-  ABDLMM  // Depth Limited MiniMax w/ Alpha Beta Pruning
+  ABDLMM,  // Depth Limited MiniMax w/ Alpha Beta Pruning
+  ABDLMMFS,  // Fail Soft Depth Limited MiniMax w/ Alpha Beta Pruning
 };
 ostream& operator<<(ostream& os, const Algorithm a);
 
 Move_Util getBestMove(Algorithm a, int d, Piece_Util** b, bool team);
 int heuristic(Piece_Util** b, bool team);
 int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team);
-int alphaBetaDLMM(Piece_Util** board, int d, int a, int b, bool isMax,
-                  bool team);
+int alphaBetaDLMM(Piece_Util** board, int d, bool team);
+int alphaBetaMax(Piece_Util** board, int d, int a, int b, bool team);
+int alphaBetaMin(Piece_Util** board, int d, int a, int b, bool team);
+int alphaBetaFailSoftDLMM(Piece_Util** board, int d, int a, int b, bool isMax,
+                          bool team);
 
 vector<Move_Util> getPlayerMoves(Piece_Util** b, bool team);
 vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team);
@@ -59,7 +70,7 @@ vector<Move_Util> getRookMoves(Piece_Util** b, int x, int y, bool team);
 vector<Move_Util> getBishopMoves(Piece_Util** b, int x, int y, bool team);
 vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team);
 bool checkAndPushMove(Piece_Util** b, vector<Move_Util>* moves, int x, int y,
-               bool team, Pos_Util start);
+                      bool team, Pos_Util start);
 bool isPos(int x);
 
 bool inCheck(Piece_Util** b, bool team, bool useBoard = false);

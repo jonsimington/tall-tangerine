@@ -23,6 +23,9 @@ ostream& operator<<(ostream& os, const Algorithm a) {
     case ABDLMM:
       os << "Depth Limited Mini Max w/ Alpha Beta Purning";
       break;
+    case ABDLMMFS:
+      os << "Fail Soft Depth Limited Mini Max w/ Alpha Beta Purning";
+      break;
     default:
       os << "None";
       break;
@@ -116,8 +119,8 @@ int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team) {
   return -1;
 }
 
-int alphaBetaDLMM(Piece_Util** board, int d, int a, int b, bool isMax,
-                  bool team) {
+int alphaBetaFailSoftDLMM(Piece_Util** board, int d, int a, int b, bool isMax,
+                          bool team) {
   if (d <= 0) {
     return heuristic(board, team);
   }
@@ -130,7 +133,7 @@ int alphaBetaDLMM(Piece_Util** board, int d, int a, int b, bool isMax,
     for (Move_Util m : getPlayerMoves(board, team)) {
       Piece_Util** tempBoard = initBoard(board, m);
 
-      v = max(v, alphaBetaDLMM(tempBoard, --d, a, b, false, team));
+      v = max(v, alphaBetaFailSoftDLMM(tempBoard, --d, a, b, false, team));
       a = max(a, v);
 
       clean(tempBoard);
@@ -147,7 +150,7 @@ int alphaBetaDLMM(Piece_Util** board, int d, int a, int b, bool isMax,
     for (Move_Util m : getPlayerMoves(board, !team)) {
       Piece_Util** tempBoard = initBoard(board, m);
 
-      v = min(v, alphaBetaDLMM(tempBoard, --d, a, b, true, team));
+      v = min(v, alphaBetaFailSoftDLMM(tempBoard, --d, a, b, true, team));
       b = min(b, v);
 
       clean(tempBoard);
@@ -163,6 +166,56 @@ int alphaBetaDLMM(Piece_Util** board, int d, int a, int b, bool isMax,
   return -1;
 }
 
+int alphaBetaDLMM(Piece_Util** board, int d, bool team) {
+  return alphaBetaMax(board, d, INT_MIN, INT_MAX, team);
+}
+
+int alphaBetaMax(Piece_Util** board, int d, int a, int b, bool team) {
+  if (d <= 0) {
+    return heuristic(board, team);
+  }
+
+  int v = INT_MIN;
+
+  for (Move_Util m : getPlayerMoves(board, team)) {
+    Piece_Util** tempBoard = initBoard(board, m);
+
+    v = max(v, alphaBetaMin(tempBoard, --d, a, b, team));
+
+    clean(tempBoard);
+    if (v >= b) {
+      return v;
+    }
+
+    a = max(a, v);
+  }
+
+  return v;
+}
+
+int alphaBetaMin(Piece_Util** board, int d, int a, int b, bool team) {
+  if (d <= 0) {
+    return heuristic(board, team);
+  }
+
+  int v = INT_MAX;
+
+  for (Move_Util m : getPlayerMoves(board, !team)) {
+    Piece_Util** tempBoard = initBoard(board, m);
+
+    v = min(v, alphaBetaMax(tempBoard, --d, a, b, team));
+
+    clean(tempBoard);
+    if (v <= a) {
+      return v;
+    }
+
+    b = min(b, v);
+  }
+
+  return v;
+}
+
 Move_Util getBestMove(Algorithm a, int d, Piece_Util** b, bool team) {
   vector<Move_Util> moves = getPlayerMoves(b, team);
 
@@ -172,15 +225,19 @@ Move_Util getBestMove(Algorithm a, int d, Piece_Util** b, bool team) {
 
   for (Move_Util& m : moves) {
     Piece_Util** tempBoard = initBoard(b, m);
+
     switch (a) {
       case DLMM:
         m.h = depthLimitedMiniMax(tempBoard, d, true, team);
         break;
       case ABDLMM:
-        m.h = alphaBetaDLMM(tempBoard, d, INT_MIN, INT_MAX, true, team);
+        m.h = alphaBetaDLMM(tempBoard, d, team);
+        break;
+      case ABDLMMFS:
+        m.h = alphaBetaFailSoftDLMM(tempBoard, d, INT_MIN, INT_MAX, true, team);
         break;
       default:
-        m.h = 0;
+        m.h = -1;
     }
 
     clean(tempBoard);
@@ -200,10 +257,8 @@ Move_Util getBestMove(Algorithm a, int d, Piece_Util** b, bool team) {
   random_shuffle(moves.begin(), moves.begin() + i);
 
   // Only pick a move not leaving you in check
-  i = 0;
-  while ((i < moveCount) && (inCheck(b, moves[i], team))) {
-    ++i;
-  }
+  for (i = 0; (i < moveCount) && (inCheck(b, moves[i], team)); ++i)
+    ;
 
   // for (auto m : moves) {
   //   cout << m << endl;
