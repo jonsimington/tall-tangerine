@@ -249,39 +249,42 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
   // Castle
   int i = 0;
   if (!b[x][y].hasMoved) {
-    // Left
-    i = 0;
-    while (true) {
-      ++i;
-      if (b[x - i][y].type == 0) {
-        continue;
-      }
-      if ((abs(b[x - i][y].type) == 4) && (!b[x - i][y].hasMoved)) {
-        Move_Util m = Move_Util(start, idxToPos(x - 1, y));
-        if (!inCheck(b, m, team)) {
-          m.end = idxToPos(x - 2, y);
-          moves.push_back(m);
+    b[x][y].hasMoved = true;
+    if (!inCheck(b, team)) {
+      // Left
+      i = 0;
+      while (true) {
+        ++i;
+        if (b[x - i][y].type == 0) {
+          continue;
         }
-      } else {
-        break;
+        if ((abs(b[x - i][y].type) == 4) && (!b[x - i][y].hasMoved)) {
+          Move_Util m = Move_Util(start, idxToPos(x - 1, y));
+          if (!inCheck(b, m, team)) {
+            m.end = idxToPos(x - 2, y);
+            moves.push_back(m);
+          }
+        } else {
+          break;
+        }
       }
-    }
 
-    // Right
-    i = 0;
-    while (true) {
-      ++i;
-      if (b[x + i][y].type == 0) {
-        continue;
-      }
-      if ((abs(b[x + i][y].type) == 4) && (!b[x + i][y].hasMoved)) {
-        Move_Util m = Move_Util(start, idxToPos(x + 1, y));
-        if (!inCheck(b, m, team)) {
-          m.end = idxToPos(x + 2, y);
-          moves.push_back(m);
+      // Right
+      i = 0;
+      while (true) {
+        ++i;
+        if (b[x + i][y].type == 0) {
+          continue;
         }
-      } else {
-        break;
+        if ((abs(b[x + i][y].type) == 4) && (!b[x + i][y].hasMoved)) {
+          Move_Util m = Move_Util(start, idxToPos(x + 1, y));
+          if (!inCheck(b, m, team)) {
+            m.end = idxToPos(x + 2, y);
+            moves.push_back(m);
+          }
+        } else {
+          break;
+        }
       }
     }
   }
