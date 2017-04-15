@@ -26,6 +26,10 @@ ostream& operator<<(ostream& os, const Algorithm a) {
     case ABDLMMFS:
       os << "Fail Soft Depth Limited Mini Max w/ Alpha Beta Purning";
       break;
+    case QSHTABDLMM:
+      os << "Depth Limited MiniMax w/ Alpha Beta Pruning, History Table & "
+            "Quiescence ";
+      break;
     default:
       os << "None";
       break;
@@ -216,7 +220,79 @@ int alphaBetaMin(Piece_Util** board, int d, int a, int b, bool team) {
   return v;
 }
 
-Move_Util getBestMove(Algorithm a, int d, Piece_Util** b, bool team) {
+int alphaBetaQSHTDLMM(Piece_Util** board, int d, bool team,
+                      unordered_map<string, int>* histTable) {
+  return alphaBetaQSHTMax(board, d, INT_MIN, INT_MAX, team, histTable);
+}
+
+int alphaBetaQSHTMax(Piece_Util** board, int d, int a, int b, bool team,
+                     unordered_map<string, int>* histTable, string moveStr,
+                     bool isQuiet) {
+  if (d <= 0 && isQuiet) {
+    updateHistTable(histTable, moveStr);
+    return heuristic(board, team);
+  }
+
+  int v = INT_MIN;
+
+  vector<Move_Util> moves = getHistSortedPlayerMoves(board, team, histTable);
+  for (Move_Util m : moves) {
+    Piece_Util** tempBoard = initBoard(board, m);
+
+    v = max(v, alphaBetaQSHTMin(tempBoard, --d, a, b, team, histTable,
+                                m.toString(), m.isQuiet));
+
+    clean(tempBoard);
+    if (v >= b) {
+      updateHistTable(histTable, m.toString());
+      return v;
+    }
+
+    a = max(a, v);
+  }
+
+  return v;
+}
+
+int alphaBetaQSHTMin(Piece_Util** board, int d, int a, int b, bool team,
+                     unordered_map<string, int>* histTable, string moveStr,
+                     bool isQuiet) {
+  if (d <= 0 && isQuiet) {
+    updateHistTable(histTable, moveStr);
+    return heuristic(board, team);
+  }
+
+  int v = INT_MAX;
+
+  vector<Move_Util> moves = getHistSortedPlayerMoves(board, team, histTable);
+  for (Move_Util m : moves) {
+    Piece_Util** tempBoard = initBoard(board, m);
+
+    v = min(v, alphaBetaQSHTMax(tempBoard, --d, a, b, team, histTable,
+                                m.toString(), m.isQuiet));
+
+    clean(tempBoard);
+    if (v <= a) {
+      updateHistTable(histTable, m.toString());
+      return v;
+    }
+
+    b = min(b, v);
+  }
+
+  return v;
+}
+
+void updateHistTable(unordered_map<string, int>* histTable, string moveStr) {
+  if (histTable->find(moveStr) != histTable->end()) {
+    (*histTable)[moveStr] = ((*histTable)[moveStr] + 1);
+  } else {
+    histTable->insert({moveStr, 0});
+  }
+}
+
+Move_Util getBestMove(Algorithm a, int d, Piece_Util** b, bool team,
+                      unordered_map<string, int>* histTable) {
   vector<Move_Util> moves = getPlayerMoves(b, team);
 
   if (moves.size() == 0) {
@@ -235,6 +311,9 @@ Move_Util getBestMove(Algorithm a, int d, Piece_Util** b, bool team) {
         break;
       case ABDLMMFS:
         m.h = alphaBetaFailSoftDLMM(tempBoard, d, INT_MIN, INT_MAX, true, team);
+        break;
+      case QSHTABDLMM:
+        m.h = alphaBetaQSHTDLMM(tempBoard, d, team, histTable);
         break;
       default:
         m.h = -1;
@@ -264,6 +343,12 @@ Move_Util getBestMove(Algorithm a, int d, Piece_Util** b, bool team) {
   //   cout << m << endl;
   // }
   // cout << endl;
+
+  // cout << "Hist Table: \n";
+  // for (auto it : *histTable) {
+  //   cout << " " << it.first << " : " << it.second << endl;
+  //   ;
+  // }
 
   return moves[i];
 }

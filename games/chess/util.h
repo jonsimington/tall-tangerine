@@ -12,6 +12,7 @@
 #include <climits>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 using namespace std;
 
@@ -35,26 +36,44 @@ struct Move_Util {
   Pos_Util end;
   bool inCheck;
   int h;
-  Move_Util() : inCheck(false), h(-1) {}
-  Move_Util(Pos_Util _start, Pos_Util _end) {
+  int hist;
+  bool isQuiet;
+  Move_Util() : inCheck(false), h(-1), hist(0), isQuiet(true) {}
+  Move_Util(Pos_Util _start, Pos_Util _end, bool _isQuiet = true) {
     start = _start;
     end = _end;
     inCheck = false;
     h = -1;
+    hist = 0;
+    isQuiet = _isQuiet;
   }
   friend ostream& operator<<(ostream& os, const Move_Util& m);
+  string toString() {
+    return ((start.file + to_string(start.rank)) +
+            (end.file + to_string(end.rank)));
+  }
   bool operator<(const Move_Util& rhs) const { return h > rhs.h; }
   void applyMove(Piece_Util** b);
 };
 
+struct moveSortByHist {
+  inline bool operator()(const Move_Util& a, const Move_Util& b) {
+    return (a.hist > b.hist);
+  }
+};
+
 enum Algorithm {
-  DLMM,   // Depth Limited MiniMax
-  ABDLMM,  // Depth Limited MiniMax w/ Alpha Beta Pruning
-  ABDLMMFS,  // Fail Soft Depth Limited MiniMax w/ Alpha Beta Pruning
+  DLMM,        // Depth Limited MiniMax
+  ABDLMM,      // Depth Limited MiniMax w/ Alpha Beta Pruning
+  ABDLMMFS,    // Fail Soft Depth Limited MiniMax w/ Alpha Beta Pruning
+  QSHTABDLMM,  // Depth Limited MiniMax w/ Alpha Beta Pruning, History Table &
+               // Quiescence
 };
 ostream& operator<<(ostream& os, const Algorithm a);
 
-Move_Util getBestMove(Algorithm a, int d, Piece_Util** b, bool team);
+Move_Util getBestMove(Algorithm a, int d, Piece_Util** b, bool team,
+                      unordered_map<string, int>* histTable = NULL);
+void updateHistTable(unordered_map<string, int>* histTable, string moveStr);
 int heuristic(Piece_Util** b, bool team);
 int depthLimitedMiniMax(Piece_Util** b, int d, bool isMax, bool team);
 int alphaBetaDLMM(Piece_Util** board, int d, bool team);
@@ -62,8 +81,18 @@ int alphaBetaMax(Piece_Util** board, int d, int a, int b, bool team);
 int alphaBetaMin(Piece_Util** board, int d, int a, int b, bool team);
 int alphaBetaFailSoftDLMM(Piece_Util** board, int d, int a, int b, bool isMax,
                           bool team);
+int alphaBetaQSHTDLMM(Piece_Util** board, int d, bool team,
+                      unordered_map<string, int>* histTable);
+int alphaBetaQSHTMax(Piece_Util** board, int d, int a, int b, bool team,
+                     unordered_map<string, int>* histTable, string moveStr = "",
+                     bool isQuiet = true);
+int alphaBetaQSHTMin(Piece_Util** board, int d, int a, int b, bool team,
+                     unordered_map<string, int>* histTable, string moveStr = "",
+                     bool isQuiet = true);
 
 vector<Move_Util> getPlayerMoves(Piece_Util** b, bool team);
+vector<Move_Util> getHistSortedPlayerMoves(
+    Piece_Util** b, bool team, unordered_map<string, int>* histTable);
 vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team);
 vector<Move_Util> getKnightMoves(Piece_Util** b, int x, int y, bool team);
 vector<Move_Util> getRookMoves(Piece_Util** b, int x, int y, bool team);

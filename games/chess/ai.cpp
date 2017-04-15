@@ -9,11 +9,13 @@ namespace cpp_client {
 namespace chess {
 
 // Sets the maximum ammout of time you will allow iterative deepening to occur
-const int MAX_CALC_TIME_IN_SECONDS = 5;
+const int MAX_CALC_TIME_IN_SECONDS = 4;
 // Sets the algorithm to use in the calculations
 // DLLMM (Depth Limited Mini Max)
 // ABDLMM (Alpha Beta Depth Limited Mini Max)
-const Algorithm CHOSEN_ALGORITHM = ABDLMM;
+// QSHTABDLMM (Depth Limited MiniMax w/ Alpha Beta Pruning, History Table &
+// Quiescence)
+const Algorithm CHOSEN_ALGORITHM = QSHTABDLMM;
 
 /// <summary>
 /// This returns your AI's name to the game server.
@@ -82,13 +84,14 @@ bool AI::run_turn() {
   double elapsed = 0.0;
   time_t start, end;
   start = time(NULL);
+  unordered_map<string, int>* histTable = new unordered_map<string, int>();
 
   // Iterate depth until the selected time has passed
   // Note: Constant MAX_CALC_TIME_IN_SECONDS is defined on line: 12
   // Note: Constant CHOSEN_ALGORITHM is defined on line: 16
   while (true) {
     ++iterDepth;
-    bestMove = getBestMove(CHOSEN_ALGORITHM, iterDepth, b, team);
+    bestMove = getBestMove(CHOSEN_ALGORITHM, iterDepth, b, team, histTable);
 
     end = time(NULL);
     elapsed = difftime(end, start);
@@ -103,6 +106,7 @@ bool AI::run_turn() {
   // If a valid best move was found translate it into the games moveset
   movePiece(bestMove);
 
+  delete histTable;
   clean(b);
   return true;  // to signify we are done with our turn.
 }

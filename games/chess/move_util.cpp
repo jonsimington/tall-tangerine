@@ -63,6 +63,23 @@ vector<Move_Util> getPlayerMoves(Piece_Util** b, bool team) {
   return moves;
 }
 
+vector<Move_Util> getHistSortedPlayerMoves(
+    Piece_Util** b, bool team, unordered_map<string, int>* histTable) {
+  vector<Move_Util> moves = getPlayerMoves(b, team);
+  string moveStr;
+
+  for (int i = 0; i < moves.size(); ++i) {
+    moveStr = moves[i].toString();
+    if (histTable->find(moveStr) != histTable->end()) {
+      moves[i].hist = histTable->at(moveStr);
+    }
+  }
+
+  sort(moves.begin(), moves.end(), moveSortByHist());
+
+  return moves;
+}
+
 vector<Move_Util> getPawnMoves(Piece_Util** b, int x, int y, bool team) {
   int dir = (team) ? -1 : 1;
   vector<Move_Util> moves;
@@ -294,9 +311,11 @@ vector<Move_Util> getKingMoves(Piece_Util** b, int x, int y, bool team) {
 
 bool checkAndPushMove(Piece_Util** b, vector<Move_Util>* moves, int x, int y,
                       bool team, Pos_Util start) {
+  bool isQuiet;
   if (b[x][y].type != 7) {
     if ((team != isPos(b[x][y].type)) || (b[x][y].type == 0)) {
-      moves->push_back(Move_Util(start, idxToPos(x, y)));
+      isQuiet = !((team != isPos(b[x][y].type)) && (b[x][y].type)); 
+      moves->push_back(Move_Util(start, idxToPos(x, y), isQuiet));
       if (b[x][y].type != 0) {
         return false;
       }
