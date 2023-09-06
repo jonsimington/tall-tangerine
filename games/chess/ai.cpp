@@ -24,7 +24,7 @@ const Algorithm CHOSEN_ALGORITHM = QSHTABDLMM;
 /// <returns>The name of your AI.</returns>
 std::string AI::get_name() const {
   // REPLACE WITH YOUR TEAM NAME!
-  return "Matthew_Whitesides";
+  return "Tall Tangerine";
 }
 
 /// <summary>
